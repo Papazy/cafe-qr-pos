@@ -312,7 +312,8 @@ $ditempati = count(array_filter($tables, fn($t) => $t['status'] === 'ditempati')
         }
 
         function viewQR(tableNumber, token) {
-            const url = `http://localhost:8000/?table=${tableNumber}&token=${token}`;
+            const baseUrl = '<?= BASE_URL ?>';
+            const url = `${baseUrl}/?table=${tableNumber}&token=${token}`;
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}`;
             
             document.getElementById('qrTableNumber').textContent = tableNumber;

@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../includes/database.php';
+require_once __DIR__ . '/../includes/config.php';
 require_once __DIR__ . '/../includes/qr-functions.php';
 
 echo "🚀 Seeding tables dengan QR tokens...\n\n";
@@ -65,7 +66,7 @@ try {
         
         echo "  Table {$table['number']} created (Zone: {$table['zone']}, Capacity: {$table['capacity']})\n";
         echo "     Token: " . substr($token, 0, 16) . "...\n";
-        echo "     QR URL: http://localhost:8000/?table={$table['number']}&token={$token}\n\n";
+        echo "     QR URL: " . BASE_URL . "/?table={$table['number']}&token={$token}\n\n";
         
         $successCount++;
     }
@@ -81,7 +82,7 @@ try {
     echo str_repeat("=", 60) . "\n\n";
     
     echo "  Next steps:\n";
-    echo "   1. Print QR codes: http://localhost:8000/pages/admin/print-qr.php\n";
+    echo "   1. Print QR codes: " . BASE_URL . "/pages/admin/print-qr.php\n";
     echo "   2. Test QR scan flow\n";
     echo "   3. Place QR codes on physical tables\n\n";
     
