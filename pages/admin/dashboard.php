@@ -1,6 +1,8 @@
 <?php
 require_once '../../includes/auth.php';
-require_once '../../includes/database.php';
+
+ 
+global $conn;
 
 // Get today's statistics
 $today = date('Y-m-d');

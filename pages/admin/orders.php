@@ -1,6 +1,8 @@
 <?php
 require_once '../../includes/auth.php';
-require_once '../../includes/database.php';
+
+ 
+global $conn;
 require_once '../../actions/admin/get-orders.php';
 
 // Get filter parameters

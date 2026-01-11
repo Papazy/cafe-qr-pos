@@ -1,11 +1,13 @@
 <?php
 require_once '../../includes/auth.php';
-require_once '../../includes/database.php';
+
+ 
+global $conn;
 
 // Get filter period
 $period = $_GET['period'] ?? 'today';
 
-// Set date range based on period
+ 
 switch($period) {
     case 'week':
         $dateCondition = "created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";

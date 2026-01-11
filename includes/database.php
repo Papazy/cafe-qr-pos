@@ -1,17 +1,19 @@
 <?php
-// Load environment variables
-require_once __DIR__ . '/../vendor/autoload.php';
-
-use Dotenv\Dotenv;
-
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
+// Load environment variables if not already loaded
+if (!isset($_ENV['DB_HOST'])) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+    $dotenv->load();
+}
 
 $host = $_ENV['DB_HOST'] ?? 'localhost';
 $db_name = $_ENV['DB_NAME'] ?? 'warkop_qr';
 $username = $_ENV['DB_USER'] ?? 'root';
 $password = $_ENV['DB_PASS'] ?? '';
 $charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
+
+// Make $conn available globally
+global $conn;
 
 try {
     $conn = new PDO(
@@ -25,7 +27,8 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    if ($_ENV['APP_ENV'] === 'production') {
+    $env = $_ENV['APP_ENV'] ?? 'development';
+    if ($env === 'production') {
         die('Database connection error. Please contact administrator.');
     } else {
         die('Database connection failed: ' . $e->getMessage());
