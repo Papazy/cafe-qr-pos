@@ -62,10 +62,6 @@ $stats = getOrderStats($conn);
                             <p class="text-xs text-yellow-700 font-semibold">Pending</p>
                             <p class="text-xl font-bold text-yellow-700"><?= $stats['pending_count'] ?? 0 ?></p>
                         </div>
-                        <div class="bg-orange-50 px-4 py-2 rounded-lg border-2 border-orange-200">
-                            <p class="text-xs text-orange-700 font-semibold">💰 Cash Pending</p>
-                            <p class="text-xl font-bold text-orange-700"><?= $stats['pending_cash_count'] ?? 0 ?></p>
-                        </div>
                         <div class="bg-blue-50 px-4 py-2 rounded-lg">
                             <p class="text-xs text-blue-700 font-semibold">Diproses</p>
                             <p class="text-xl font-bold text-blue-700"><?= $stats['diproses_count'] ?? 0 ?></p>

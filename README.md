@@ -1,224 +1,247 @@
-# 🚀 Warkop QR - Setup Guide
+# Warkop QR - Sistem Pemesanan QR Code
 
-Sistem pemesanan menggunakan QR Code untuk warung kopi.
+Sistem pemesanan makanan dan minuman berbasis QR Code untuk warung kopi/cafe. Pelanggan cukup scan QR di meja, pilih menu, dan pesan langsung dari smartphone.
 
-## 📋 Requirements
+## Tentang Project
 
+Project ini dibuat menggunakan PHP Native (tanpa framework) dengan konsep simple dan mudah dipahami. Cocok untuk warung kopi, cafe kecil, atau restoran yang ingin digitalisasi sistem pemesanan dengan budget minimal.
+
+**Tech Stack:** PHP 7.4+, MySQL, Tailwind CSS, Chart.js
+
+## Fitur Utama
+
+### Untuk Pelanggan
+- **QR Code Ordering** - Scan QR di meja untuk langsung pesan
+- **Browse Menu** - Lihat menu lengkap dengan foto dan harga
+- **Keranjang Belanja** - Tambah/kurang item sebelum checkout
+- **Multiple Payment** - Pilihan pembayaran: Cash, Transfer, QRIS
+- **Order Tracking** - Lacak status pesanan real-time
+- **Mobile Responsive** - Optimized untuk smartphone
+
+### Untuk Admin
+- **Dashboard** - Monitoring orders dan revenue harian
+- **Kelola Menu** - CRUD menu dengan upload gambar
+- **Kelola Pesanan** - Update status pesanan (Pending → Diproses → Selesai)
+- **Kelola Meja** - Generate dan manage QR code per meja
+- **Laporan Penjualan** - Revenue, top menu, payment method analytics
+- **Filter Periode** - Laporan harian, mingguan, bulanan
+
+## Instalasi
+
+### Requirements
 - PHP 7.4 atau lebih tinggi
-- MySQL 5.7 atau lebih tinggi
-- Composer (optional, untuk library tambahan)
+- MySQL 5.7+
+- Composer
+- Web server (Apache/Nginx) atau PHP built-in server
 
-## 🛠️ Installation Steps
+### Langkah Instalasi
 
-### 1. Clone/Copy Project
-
+1. **Clone repository**
 ```bash
-# Jika menggunakan git
-git clone <repository-url>
+git clone https://github.com/username/warkop-qr.git
 cd warkop-qr
-
-# Atau extract ZIP ke folder project
 ```
 
-### 2. Setup Database
-
+2. **Install dependencies**
 ```bash
-# Login ke MySQL
-mysql -u root -p
-
-# Jalankan schema (ini akan create database & tables)
-mysql -u root -p < database/schema.sql
+composer install
 ```
 
-**Atau via phpMyAdmin:**
-1. Buka phpMyAdmin
-2. Import file `database/schema.sql`
-
-### 3. Konfigurasi Database Connection
-
-Edit file `includes/database.php`:
-
-```php
-$host = 'localhost';
-$dbname = 'warkop_qr';
-$username = 'root';        // Sesuaikan dengan username MySQL Anda
-$password = '';            // Sesuaikan dengan password MySQL Anda
-```
-
-### 4. Seed Data (Optional tapi Recommended)
-
+3. **Setup database**
 ```bash
-# Seed kategori menu
-php database/seed_kategori.php
+# Buat database
+mysql -u root -p -e "CREATE DATABASE warkop_qr"
 
-# Seed menu items
-php database/seed_menu.php
+# Import schema
+mysql -u root -p warkop_qr < database/schema.sql
+```
 
-# Seed user admin (username: admin, password: admin123)
-php database/seed_user.php
+4. **Konfigurasi environment**
+```bash
+cp .env.example .env
+```
 
-# Seed tables dengan QR tokens
+Edit `.env` sesuai konfigurasi database Anda:
+```
+DB_HOST=localhost
+DB_NAME=warkop_qr
+DB_USER=root
+DB_PASS=your_password
+BASE_URL=http://localhost:8000
+```
+
+5. **Seed data (opsional)**
+```bash
+# Seed kategori dan menu sample
+php database/seed.php
+
+# Generate 14 meja dengan QR code
 php database/seed_tables.php
 ```
 
-### 5. Setup Permissions
-
-```bash
-# Set permission untuk folder uploads (jika di Linux/Mac)
-chmod 755 uploads/
-chmod 755 uploads/qr/
-
-# Buat folder jika belum ada
-mkdir -p uploads/qr
-```
-
-### 6. Jalankan Server
-
-**Option A: PHP Built-in Server (Development)**
+6. **Jalankan server**
 ```bash
 php -S localhost:8000
 ```
 
-Akses: `http://localhost:8000`
+Buka browser: `http://localhost:8000`
 
-**Option B: Apache/Nginx (Production)**
-- Copy project ke folder htdocs/www
-- Akses via: `http://localhost/warkop-qr`
+## Cara Penggunaan
 
-### 7. Login Admin
+### Admin Panel
+1. Akses: `http://localhost:8000/pages/admin/login.php`
+2. Login: `admin` / `admin123`
+3. Menu admin:
+   - Dashboard: Lihat statistik harian
+   - Orders: Kelola status pesanan
+   - Menu: Tambah/edit/hapus menu
+   - Meja: Generate QR code dan kelola meja
+   - Reports: Analisa penjualan
 
-```
-URL: http://localhost:8000/pages/admin/login.php
-Username: admin
-Password: admin123
-```
+### Customer Flow
+1. Scan QR code di meja (atau pilih nomor meja untuk testing)
+2. Browse menu dan tambahkan ke keranjang
+3. Klik keranjang → Checkout
+4. Isi nama dan pilih metode pembayaran
+5. Konfirmasi pesanan
+6. Lihat status pesanan
 
----
+## Testing dari HP
 
-## 📱 Cara Pakai
+Untuk test dari smartphone di jaringan lokal:
 
-### Untuk Customer:
-
-1. **Scan QR Code** di meja
-2. **Pilih menu** yang diinginkan
-3. **Tambah ke keranjang**
-4. **Checkout** → Isi nama & pilih payment
-5. **Lihat status** pesanan
-
-### Untuk Admin:
-
-1. **Login** di `/pages/admin/login.php`
-2. **Dashboard** - Lihat statistik hari ini
-3. **Kelola Pesanan** - Update status order
-4. **Kelola Menu** - Tambah/edit/hapus menu
-5. **Kelola Meja** - Manage meja & QR codes
-6. **Laporan** - Lihat revenue & analytics
-
----
-
-## 🔐 Security Notes
-
-### Setelah Setup, Wajib Ubah:
-
-1. **Password Admin**
-   - Login → Update password di database
-   - Hash dengan: `password_hash('password_baru', PASSWORD_DEFAULT)`
-
-2. **QR Secret Key**
-   - Edit `.env` atau `includes/qr-functions.php`
-   - Ganti `warkop_secret_2025_change_this_in_production`
-
-3. **Database Credentials**
-   - Jangan gunakan user `root` di production
-   - Buat user khusus dengan permissions terbatas
-
----
-
-## 📦 Struktur Database
-
-### Tables:
-- `users` - Admin accounts
-- `kategori` - Menu categories (Kopi, Non Kopi, Makanan, Snack)
-- `menu` - Menu items dengan harga & gambar
-- `tables` - Meja dengan QR token & status
-- `orders` - Order dengan status (Pending → Diproses → Selesai)
-- `order_items` - Detail items per order
-
----
-
-## 🎯 Fitur Utama
-
-### Customer Side:
-- ✅ QR Code scanning untuk pilih meja
-- ✅ Browse menu by kategori
-- ✅ Shopping cart dengan localStorage
-- ✅ Multiple payment methods (Cash, QRIS, Transfer)
-- ✅ Real-time order status tracking
-- ✅ Mobile-responsive design
-
-### Admin Side:
-- ✅ Dashboard dengan statistik real-time
-- ✅ Order management (update status)
-- ✅ Menu management (CRUD)
-- ✅ Table management (QR codes)
-- ✅ Revenue reports & analytics
-- ✅ Print QR codes untuk meja
-
-### Table Management:
-- ✅ Auto table status (tersedia/ditempati)
-- ✅ One active order per table
-- ✅ Scan QR saat ada order aktif → redirect ke status
-- ✅ Auto-clear table saat order selesai
-- ✅ QR token regeneration untuk security
-
----
-
-## 🐛 Troubleshooting
-
-### Error: "Cannot connect to database"
+1. Jalankan server dengan IP network:
 ```bash
-# Check MySQL running
-sudo service mysql status
-
-# Check credentials di includes/database.php
+php -S 0.0.0.0:8000
 ```
 
-### Error: "Headers already sent"
+2. Cek IP address Mac/PC:
 ```bash
-# Check untuk whitespace atau ?> di file PHP
-# Hapus closing tag ?> di semua include files
+# Mac/Linux
+ifconfig | grep "inet "
+
+# Windows
+ipconfig
 ```
 
-### QR Code tidak bisa di-scan
-```bash
-# Regenerate QR token di admin
-# Atau jalankan ulang: php database/seed_tables.php
+3. Akses dari HP (pastikan satu WiFi):
+```
+http://192.168.x.x:8000
 ```
 
-### Meja tidak auto-update status
-```bash
-# Check foreign key constraint
-# Jalankan: mysql -u root warkop_qr < database/migration_add_current_order.sql
-```
+## Struktur Database
+
+### Tables
+- `users` - Admin login credentials
+- `kategori` - Kategori menu (Kopi, Non Kopi, Makanan, Snack)
+- `menu` - Daftar menu dengan harga dan gambar
+- `tables` - Data meja dengan QR token
+- `orders` - Pesanan pelanggan
+- `order_items` - Detail item per pesanan
+
+### Key Features
+- Foreign key relationships untuk data integrity
+- Index pada kolom yang sering di-query
+- QR token dengan daily rotation untuk security
+- Status tracking: Pending → Diproses → Selesai/Dibatalkan
+
+## Teknologi
+
+**Backend:**
+- PHP Native (no framework)
+- PDO untuk database
+- Composer untuk dependency management
+
+**Frontend:**
+- Tailwind CSS untuk styling
+- Vanilla JavaScript (no jQuery)
+- LocalStorage untuk cart management
+- Chart.js untuk data visualization
+
+**Libraries:**
+- `endroid/qr-code` - QR code generation
+- `vlucas/phpdotenv` - Environment variables
+
+## Fitur Keamanan
+
+- Password hashing dengan `password_hash()`
+- Prepared statements untuk prevent SQL injection
+- Session management untuk admin authentication
+- QR token dengan SHA-256 encryption
+- CSRF protection ready
+- Input validation dan sanitization
+
+## Deployment
+
+### Production Checklist
+- [ ] Ubah credentials admin di database
+- [ ] Set `BASE_URL` ke domain production
+- [ ] Ganti `SECRET_KEY` di .env
+- [ ] Disable error display di `php.ini`
+- [ ] Setup SSL/HTTPS
+- [ ] Backup database secara berkala
+- [ ] Set proper file permissions (755 folder, 644 files)
+
+### Recommended Hosting
+- Shared hosting dengan PHP 7.4+ dan MySQL
+- VPS dengan LAMP/LEMP stack
+- Cloud hosting (DigitalOcean, AWS, etc)
+
+## Browser Support
+
+- Chrome (recommended)
+- Safari iOS
+- Firefox
+- Edge
+- Opera
+
+## Troubleshooting
+
+**Problem:** QR scan tidak redirect
+- Pastikan BASE_URL sudah benar di .env
+- Check token masih valid (daily rotation)
+
+**Problem:** Menu tidak muncul
+- Jalankan seed: `php database/seed.php`
+- Check koneksi database
+
+**Problem:** Upload gambar gagal
+- Check permission folder uploads/ (755)
+- Pastikan PHP `upload_max_filesize` cukup besar
+
+**Problem:** Chart tidak muncul di dashboard
+- Check ada data orders di database
+- Clear browser cache
+
+## Roadmap
+
+- [ ] WebSocket untuk real-time order notification
+- [ ] Print receipt feature
+- [ ] Multi-branch support
+- [ ] Loyalty program
+- [ ] Rating & review system
+- [ ] Inventory management
+- [ ] WhatsApp notification integration
+
+## Kontribusi
+
+Kontribusi selalu welcome! Silakan:
+1. Fork repository
+2. Buat branch fitur (`git checkout -b fitur-baru`)
+3. Commit changes (`git commit -m 'Tambah fitur baru'`)
+4. Push ke branch (`git push origin fitur-baru`)
+5. Buat Pull Request
+
+## License
+
+MIT License - bebas digunakan untuk project komersial maupun personal.
+
+## Support
+
+Jika ada pertanyaan atau butuh bantuan:
+- Buat issue di GitHub
+- Email: your-email@example.com
 
 ---
 
-## 📞 Support
-
-Jika ada masalah atau pertanyaan, silakan:
-1. Check dokumentasi di folder `/context/`
-2. Lihat error log di browser console
-3. Check PHP error log
-
----
-
-## 📄 License
-
-MIT License - Bebas digunakan untuk project komersial/personal.
-
----
-
-**Happy Coding! ☕️**
-
-
-pass2026warkopqr
+**Made with ☕ for Indonesian Coffee Shops**

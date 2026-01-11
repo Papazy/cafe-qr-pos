@@ -44,7 +44,7 @@ $stmt = $conn->query("
     FROM order_items oi
     JOIN menu m ON oi.menu_id = m.id
     JOIN orders o ON oi.order_id = o.id
-    WHERE $dateCondition AND o.status != 'Dibatalkan'
+    WHERE " . str_replace('created_at', 'o.created_at', $dateCondition) . " AND o.status != 'Dibatalkan'
     GROUP BY m.id, m.nama
     ORDER BY total_qty DESC
     LIMIT 5
@@ -58,7 +58,7 @@ $stmt = $conn->query("
     JOIN menu m ON oi.menu_id = m.id
     JOIN kategori k ON m.kategori_id = k.id
     JOIN orders o ON oi.order_id = o.id
-    WHERE $dateCondition AND o.status != 'Dibatalkan'
+    WHERE " . str_replace('created_at', 'o.created_at', $dateCondition) . " AND o.status != 'Dibatalkan'
     GROUP BY k.id, k.nama
     ORDER BY revenue DESC
 ");
@@ -135,12 +135,10 @@ $paymentStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php else: ?>
                         <div class="space-y-3">
                             <?php 
-                            $medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
                             foreach ($topMenus as $index => $menu): 
                             ?>
                                 <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                                     <div class="flex items-center gap-3">
-                                        <span class="text-2xl"><?= $medals[$index] ?></span>
                                         <div>
                                             <p class="font-semibold text-gray-900"><?= htmlspecialchars($menu['nama']) ?></p>
                                             <p class="text-sm text-gray-600"><?= $menu['total_qty'] ?> terjual • Rp <?= number_format($menu['total_revenue'], 0, ',', '.') ?></p>
@@ -161,13 +159,17 @@ $paymentStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <!-- Category Revenue -->
                     <div class="bg-white rounded-lg border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-900 mb-4">Pendapatan per Kategori</h3>
-                        <canvas id="categoryChart" height="250"></canvas>
+                        <div style="height: 300px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
                     </div>
 
                     <!-- Payment Method -->
                     <div class="bg-white rounded-lg border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-900 mb-4">Metode Pembayaran</h3>
-                        <canvas id="paymentChart" height="250"></canvas>
+                        <div style="height: 300px;">
+                            <canvas id="paymentChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -194,7 +196,7 @@ $paymentStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
                     plugins: { legend: { display: false } },
                     scales: {
                         y: {
@@ -228,7 +230,7 @@ $paymentStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
                     plugins: {
                         legend: { position: 'bottom' },
                         tooltip: {
